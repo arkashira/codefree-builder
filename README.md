@@ -1,14 +1,10 @@
-# CodeFree Builder
-A Python project for customizing the layout and design of an app.
+# Codefree Builder
+
+A simple business logic editor that allows users to add rules without writing code.
 
 ## Features
-* Add and manage templates
-* Add and manage themes
-* Customize layout and design
-* Save design as JSON
 
-## Usage
-1. Create a `CodeFreeBuilder` instance
-2. Add templates and themes using `add_template` and `add_theme` methods
-3. Customize layout and design using `customize_layout` and `customize_design` methods
-4. Save design as JSON using `save_design` method
+* Logic editor presents a rule-builder UI (IF condition THEN action)
+* Supports at least 5 built-in actions (show/hide, navigate, submit, set variable, call API)
+* Conditions can reference component values and data source fields
+* Rules are evaluated client-side with no latency perceptible to user

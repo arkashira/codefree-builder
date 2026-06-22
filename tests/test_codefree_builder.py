@@ -1,55 +1,54 @@
 import pytest
-import json
-from codefree_builder import CodeFreeBuilder, Template, Theme
+from codefree_builder import LogicEditor, Rule, Condition, Action
 
-def test_add_template():
-    builder = CodeFreeBuilder()
-    template = Template("Test Template", ["header", "footer"])
-    builder.add_template(template)
-    assert len(builder.get_templates()) == 1
+def test_add_rule():
+    editor = LogicEditor()
+    rule = Rule(Condition('field1', 'equals', 'value1'), Action('show', 'target1'))
+    editor.add_rule(rule)
+    assert len(editor.rules) == 1
 
-def test_add_theme():
-    builder = CodeFreeBuilder()
-    theme = Theme("Test Theme", ["red", "blue"])
-    builder.add_theme(theme)
-    assert len(builder.get_themes()) == 1
+def test_evaluate_rule():
+    editor = LogicEditor()
+    rule = Rule(Condition('field1', 'equals', 'value1'), Action('show', 'target1'))
+    editor.add_rule(rule)
+    data = {'field1': 'value1'}
+    triggered_actions = editor.evaluate(data)
+    assert len(triggered_actions) == 1
+    assert triggered_actions[0].type == 'show'
 
-def test_customize_layout():
-    builder = CodeFreeBuilder()
-    template = Template("Test Template", ["header", "footer"])
-    builder.add_template(template)
-    components = ["header", "content", "footer"]
-    customized_template = builder.customize_layout("Test Template", components)
-    assert customized_template.layout == components
+def test_evaluate_condition_equals():
+    editor = LogicEditor()
+    condition = Condition('field1', 'equals', 'value1')
+    data = {'field1': 'value1'}
+    assert editor.evaluate_condition(condition, data)
 
-def test_customize_design():
-    builder = CodeFreeBuilder()
-    theme = Theme("Test Theme", ["red", "blue"])
-    builder.add_theme(theme)
-    colors = ["green", "yellow"]
-    customized_theme = builder.customize_design("Test Theme", colors)
-    assert customized_theme.colors == colors
+def test_evaluate_condition_not_equals():
+    editor = LogicEditor()
+    condition = Condition('field1', 'not_equals', 'value1')
+    data = {'field1': 'value2'}
+    assert editor.evaluate_condition(condition, data)
 
-def test_save_design():
-    builder = CodeFreeBuilder()
-    template = Template("Test Template", ["header", "footer"])
-    theme = Theme("Test Theme", ["red", "blue"])
-    builder.add_template(template)
-    builder.add_theme(theme)
-    design = builder.save_design(template, theme)
-    assert json.loads(design) == {
-        "template": "Test Template",
-        "layout": ["header", "footer"],
-        "theme": "Test Theme",
-        "colors": ["red", "blue"]
-    }
+def test_get_supported_actions():
+    editor = LogicEditor()
+    supported_actions = editor.get_supported_actions()
+    assert len(supported_actions) == 6
+    assert 'show' in supported_actions
+    assert 'hide' in supported_actions
+    assert 'navigate' in supported_actions
+    assert 'submit' in supported_actions
+    assert 'set_variable' in supported_actions
+    assert 'call_api' in supported_actions
 
-def test_template_not_found():
-    builder = CodeFreeBuilder()
+def test_get_supported_operators():
+    editor = LogicEditor()
+    supported_operators = editor.get_supported_operators()
+    assert len(supported_operators) == 2
+    assert 'equals' in supported_operators
+    assert 'not_equals' in supported_operators
+
+def test_evaluate_condition_unsupported_operator():
+    editor = LogicEditor()
+    condition = Condition('field1', 'unsupported', 'value1')
+    data = {'field1': 'value1'}
     with pytest.raises(ValueError):
-        builder.customize_layout("Non Existent Template", ["header", "footer"])
-
-def test_theme_not_found():
-    builder = CodeFreeBuilder()
-    with pytest.raises(ValueError):
-        builder.customize_design("Non Existent Theme", ["red", "blue"])
+        editor.evaluate_condition(condition, data)

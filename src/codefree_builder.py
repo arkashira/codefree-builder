@@ -1,55 +1,49 @@
 import json
 from dataclasses import dataclass
-from typing import List
+from typing import Dict, List
 
 @dataclass
-class Template:
-    name: str
-    layout: List[str]
+class Condition:
+    field: str
+    operator: str
+    value: str
 
 @dataclass
-class Theme:
-    name: str
-    colors: List[str]
+class Action:
+    type: str
+    target: str
+    value: str = None
 
-class CodeFreeBuilder:
+@dataclass
+class Rule:
+    condition: Condition
+    action: Action
+
+class LogicEditor:
     def __init__(self):
-        self.templates = []
-        self.themes = []
+        self.rules = []
 
-    def add_template(self, template: Template):
-        self.templates.append(template)
+    def add_rule(self, rule: Rule):
+        self.rules.append(rule)
 
-    def add_theme(self, theme: Theme):
-        self.themes.append(theme)
+    def evaluate(self, data: Dict[str, str]) -> List[Action]:
+        triggered_actions = []
+        for rule in self.rules:
+            if self.evaluate_condition(rule.condition, data):
+                triggered_actions.append(rule.action)
+        return triggered_actions
 
-    def get_templates(self):
-        return self.templates
-
-    def get_themes(self):
-        return self.themes
-
-    def customize_layout(self, template_name: str, components: List[str]):
-        template = next((t for t in self.templates if t.name == template_name), None)
-        if template:
-            template.layout = components
-            return template
+    def evaluate_condition(self, condition: Condition, data: Dict[str, str]) -> bool:
+        field_value = data.get(condition.field)
+        if condition.operator == 'equals':
+            return field_value == condition.value
+        elif condition.operator == 'not_equals':
+            return field_value != condition.value
         else:
-            raise ValueError("Template not found")
+            raise ValueError(f"Unsupported operator: {condition.operator}")
 
-    def customize_design(self, theme_name: str, colors: List[str]):
-        theme = next((t for t in self.themes if t.name == theme_name), None)
-        if theme:
-            theme.colors = colors
-            return theme
-        else:
-            raise ValueError("Theme not found")
+    def get_supported_actions(self) -> List[str]:
+        return ['show', 'hide', 'navigate', 'submit', 'set_variable', 'call_api']
 
-    def save_design(self, template: Template, theme: Theme):
-        design = {
-            "template": template.name,
-            "layout": template.layout,
-            "theme": theme.name,
-            "colors": theme.colors
-        }
-        return json.dumps(design)
+    def get_supported_operators(self) -> List[str]:
+        return ['equals', 'not_equals']
