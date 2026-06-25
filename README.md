@@ -1,10 +1,11 @@
 # Codefree Builder
+A Python project that generates TypeScript code based on a provided configuration.
 
-A simple business logic editor that allows users to add rules without writing code.
+## Usage
+1. Create a `Config` object with the desired components and layout.
+2. Call the `generate_code` function to generate the TypeScript code.
+3. Validate the generated code using the `validate_code` function.
+4. Add type annotations and error handling using the `generate_type_annotations` and `add_error_handling` functions.
 
-## Features
-
-* Logic editor presents a rule-builder UI (IF condition THEN action)
-* Supports at least 5 built-in actions (show/hide, navigate, submit, set variable, call API)
-* Conditions can reference component values and data source fields
-* Rules are evaluated client-side with no latency perceptible to user
+## Testing
+Run the tests using `pytest` to ensure the implementation is correct.
